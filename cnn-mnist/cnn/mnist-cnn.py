@@ -7,6 +7,7 @@ from tqdm import tqdm
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from sklearn.metrics import confusion_matrix
 
 def load_mnist_images(filename):
     with open(filename, 'rb') as f:
@@ -104,6 +105,45 @@ def evaluate(model, loader, device):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
     return 100 * correct / total
+
+# def test_model(model, loader, device, criterion=None, num_classes=None):
+#     model.eval()
+#     correct = 0
+#     total = 0
+#     all_preds = []
+#     all_labels = []
+#     total_loss = 0.0
+    
+#     with torch.no_grad():
+#         for images, labels in loader:
+#             images, labels = images.to(device), labels.to(device)
+            
+#             outputs = model(images)
+#             _, predicted = torch.max(outputs, 1)
+            
+#             total += labels.size(0)
+#             correct += (predicted == labels).sum().item()
+            
+#             all_preds.extend(predicted.cpu().numpy())
+#             all_labels.extend(labels.cpu().numpy())
+            
+#             if criterion is not None:
+#                 loss = criterion(outputs, labels)
+#                 total_loss += loss.item() * labels.size(0)  # nhân với batch size
+    
+#     accuracy = 100 * correct / total
+#     avg_loss = total_loss / total if criterion is not None else None
+    
+#     conf_matrix = None
+#     if num_classes is not None:
+#         conf_matrix = confusion_matrix(all_labels, all_preds, labels=list(range(num_classes)))
+    
+#     return {
+#         'accuracy': accuracy,
+#         'avg_loss': avg_loss,
+#         'conf_matrix': conf_matrix
+#     }
+
 
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
